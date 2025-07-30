@@ -26,6 +26,13 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";    
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # 2nd drive
+  fileSystems."/mnt/games" = {
+	device = "/dev/disk/by-uuid/77658911-08ae-46fd-80e4-e579792dcf44";
+	fsType = "ext4";
+	options = [ "defaults" ];
+  };
+
   #console configs
   fonts = {
     enableDefaultPackages = true;
@@ -74,9 +81,12 @@
 
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
-  services.xserver.enable = true;
+#  services.xserver.enable = true;
+  services.libinput.enable = true;
   services.xserver.displayManager.startx.enable = false;
-  programs.xwayland.enable = true;
+# programs.xwayland.enable = true;
+
+
 
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
@@ -102,7 +112,7 @@
     audio.enable = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
@@ -134,12 +144,6 @@
 	dataDir = "/home/drewb/Documents";
 	overrideDevices = true;
 	overrideFolders = true;
-	settings = {
-		gui = {
-			user = "drewb";
-			password = "9906";
-		};
-	};
   };
 
   #programs.steam.enable = true;
@@ -154,17 +158,23 @@
 
   #Hyprland
   programs.hyprland = {
-#	enable = true;
-#	nvidiaPatches = true;
-# 	xwayland.enable = true;
+	enable = true;
+ 	xwayland.enable = true;
   };
 
   #Niri
 #  programs.niri.enable = true;
 
   environment.sessionVariables = {
+
+	STEAM_FORCE_DESKTOPUI_SCALING = "1";
+	STEAM_USE_OVERLAY = "1";
+	SDL_VIDEODRIVER = "wayland";
+	GDK_BACKEND = "wayland,x11";
+
 	WLR_NO_HARDWARE_CURSORS = "1";
 	NIXOS_OZONE_WL = "1";
+	__GLX_VENDOR_LIBARY_NAME = "nvidia";
   };
 
   #programs.wofi.enable = true;
@@ -175,12 +185,22 @@
 
 
   # nvidia drivers
-  hardware.opengl = {
-   enable = true;
-   driSupport32Bit = true;
-  };
+#  hardware.opengl = {
+#   enable = true;
+#   driSupport32Bit = true;
+#  };
+
+   hardware.graphics = {
+	enable = true;
+	enable32Bit = true;
+   };
+
   hardware.nvidia = {
    modesetting.enable = true;
+
+   powerManagement.enable = true;
+  # powerManagement.finegrained = false;
+
    open = false;
    nvidiaSettings = true;
    package = config.boot.kernelPackages.nvidiaPackages.stable;
@@ -195,7 +215,16 @@
   nixpkgs.config.allowBroken = true; 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+  nixpkgs.config.permittedInsecurePackages = [
+  "dotnet-runtime-7.0.20"
+  ];
   environment.systemPackages = with pkgs; [
+
+  # 32 bit thingies
+    pkgsi686Linux.alsa-lib 
+    pkgsi686Linux.mesa
+    pkgsi686Linux.libpulseaudio
+    pkgsi686Linux.libGL
 
   # Programing Stuff
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
@@ -211,6 +240,8 @@
   ripgrep
   kitty
   ghostty
+  fzf
+  fd
   git
   llvm
   xwayland
@@ -218,15 +249,21 @@
 
   godot
   pico8
+  eclipse-java
   SDL2
   alsa-lib
   libpulseaudio
   caligula
+  helix
+  emacs
+  unityhub
 
   #Gaming
   vesktop
   steam
+  protonup
   prismlauncher
+  vintagestory
   jdk8
   mesa
   libGL
@@ -236,10 +273,16 @@
   swaybg
   wpaperd
   mpvpaper
+  hyprpaper
   swww
   networkmanagerapplet 
   dunst
   gparted
+  brightnessctl
+  playerctl
+  cava
+  pavucontrol
+  
 
   # Niri stuff
   mako
@@ -250,6 +293,7 @@
 
   # Other
   brave
+  librewolf
   qutebrowser
   obsidian
   fish

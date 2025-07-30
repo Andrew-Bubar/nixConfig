@@ -1,0 +1,11 @@
+show = drun
+prompt =  Run:
+lines = 10
+columns = 1
+width = 500
+location = center
+allow_images = true
+term = kitty
+allow_markup = true
+insensitive = true
+
